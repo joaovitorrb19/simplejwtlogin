@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.Date;
 
 @Service
 public class JwtTokenService {
@@ -19,6 +20,14 @@ public class JwtTokenService {
                 .withClaim("role",userDetails.getAuthorities().toString())
                 .withExpiresAt(Instant.now().atOffset(ZoneOffset.of("-03:00")).toInstant())
                 .sign(Algorithm.HMAC256(secret));
+    }
+
+    public String getSubject(String token){
+        return JWT.decode(token).getSubject();
+    }
+
+    public boolean isInvalid(String token){
+        return JWT.decode(token).getExpiresAt().after(Date.from(Instant.now().atOffset(ZoneOffset.of("-03:00")).toInstant()));
     }
 
 }
